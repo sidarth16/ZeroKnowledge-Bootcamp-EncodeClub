@@ -13,7 +13,7 @@ func sum_even{bitwise_ptr: BitwiseBuiltin*}(arr_len: felt, arr: felt*, run: felt
         return (sum = 0);
     }
     
-    // nondeterministic Jmp: https://www.cairo-lang.org/docs/how_cairo_works/non_deterministic_jumps.html
+    // Non-Deterministic Jmp: https://www.cairo-lang.org/docs/how_cairo_works/non_deterministic_jumps.html
     tempvar curr_element = arr[idx];
     %{ memory[ap] = ids.curr_element % 2 %}
     %{print(f"{ids.curr_element} % 2 :  {memory[ap]}")%}
