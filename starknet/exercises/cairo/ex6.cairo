@@ -15,9 +15,15 @@ func sum_even{bitwise_ptr: BitwiseBuiltin*}(arr_len: felt, arr: felt*, run: felt
     
     // Non-Deterministic Jmp: https://www.cairo-lang.org/docs/how_cairo_works/non_deterministic_jumps.html
     tempvar curr_element = arr[idx];
-    %{ memory[ap] = ids.curr_element % 2 %}
-    %{print(f"{ids.curr_element} % 2 :  {memory[ap]}")%}
-    jmp odd if [ap] != 0, ap++;
+    
+    //---APPROACH 1 (without bit operators )----
+    // %{ memory[ap] = ids.curr_element % 2 %}
+    // %{print(f"{ids.curr_element} % 2 :  {memory[ap]}")%}
+    // jmp odd if [ap] != 0, ap++;
+    //----------------------------------------
+
+    let (lsb) = bitwise_and (curr_element , 1);
+    jmp odd if lsb != 0 ;
 
     even:
     let (sum_of_remaining) = sum_even(arr_len=arr_len, arr=arr, run= run+1, idx = idx + 1);
