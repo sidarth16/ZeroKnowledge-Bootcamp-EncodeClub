@@ -46,9 +46,3 @@ func submit_sale{pedersen_ptr : HashBuiltin*, syscall_ptr : felt*, range_check_p
     // Functions must always return something 
     return();
 }
-
-
-
-
-
-
