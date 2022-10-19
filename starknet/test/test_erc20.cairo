@@ -91,9 +91,25 @@ func test_burn_haircut{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     // Get airdrop
     Erc20.faucet(contract_address=contract_address, amount=Uint256(666, 0));
 
+    // Start user balance
+    let (start_user_balance) = Erc20.balanceOf(
+        contract_address=contract_address, account=TEST_ACC1
+    );
+    %{print("start_user_balance: ",ids.start_user_balance.low)%}
+
     // Call burn
     Erc20.burn(contract_address=contract_address, amount=Uint256(500, 0));
     %{ stop_prank_callable() %}
+
+    // Final user balance
+    let (final_user_balance) = Erc20.balanceOf(
+        contract_address=contract_address, account=TEST_ACC1
+    );
+    %{print("final_user_balance: ",ids.final_user_balance.low)%}
+
+    // Assert user's balance increased by 500
+    let (user_diff) = uint256_sub( start_user_balance, final_user_balance);
+    assert user_diff.low = 500;
 
     // Final admin balance
     let (final_admin_balance) = Erc20.balanceOf(
@@ -107,47 +123,47 @@ func test_burn_haircut{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     return ();
 }
 
-@external
-func test_exclusive_faucet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
-    alloc_locals;
+// @external
+// func test_exclusive_faucet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+//     alloc_locals;
 
-    tempvar contract_address;
-    %{ ids.contract_address = context.contract_a_address %}
+//     tempvar contract_address;
+//     %{ ids.contract_address = context.contract_a_address %}
 
-    // Start admin balance
-    let (start_TEST_ACC1_balance) = Erc20.balanceOf(
-        contract_address=contract_address, account=TEST_ACC1
-    );
+//     // Start admin balance
+//     let (start_TEST_ACC1_balance) = Erc20.balanceOf(
+//         contract_address=contract_address, account=TEST_ACC1
+//     );
 
-    // Call as test_acc1
-    %{ stop_prank_callable = start_prank(ids.TEST_ACC1, ids.contract_address) %}
+//     // Call as test_acc1
+//     %{ stop_prank_callable = start_prank(ids.TEST_ACC1, ids.contract_address) %}
 
-    // Ensure TEST_ACC1 is not on the whitelist by defualt
-    let (allowed) = Erc20.check_whitelist(contract_address=contract_address, account=TEST_ACC1);
-    assert allowed = 0;
+//     // Ensure TEST_ACC1 is not on the whitelist by defualt
+//     let (allowed) = Erc20.check_whitelist(contract_address=contract_address, account=TEST_ACC1);
+//     assert allowed = 0;
 
-    // Apply to get on the whitelist
-    let (apply) = Erc20.request_whitelist(contract_address=contract_address);
-    assert apply = 1;
+//     // Apply to get on the whitelist
+//     let (apply) = Erc20.request_whitelist(contract_address=contract_address);
+//     assert apply = 1;
 
-    // Ensure TEST_ACC1 is now on the whitelist by defualt
-    let (allowed) = Erc20.check_whitelist(contract_address=contract_address, account=TEST_ACC1);
-    assert allowed = 1;
+//     // Ensure TEST_ACC1 is now on the whitelist by defualt
+//     let (allowed) = Erc20.check_whitelist(contract_address=contract_address, account=TEST_ACC1);
+//     assert allowed = 1;
 
-    // Call exclusive_faucet asking for more than 10,000
-    let (allowed) = Erc20.exclusive_faucet(
-        contract_address=contract_address, amount=Uint256(200000, 0)
-    );
-    %{ stop_prank_callable() %}
+//     // Call exclusive_faucet asking for more than 10,000
+//     let (allowed) = Erc20.exclusive_faucet(
+//         contract_address=contract_address, amount=Uint256(200000, 0)
+//     );
+//     %{ stop_prank_callable() %}
 
-    // Final admin balance
-    let (final_TEST_ACC1_balance) = Erc20.balanceOf(
-        contract_address=contract_address, account=TEST_ACC1
-    );
+//     // Final admin balance
+//     let (final_TEST_ACC1_balance) = Erc20.balanceOf(
+//         contract_address=contract_address, account=TEST_ACC1
+//     );
 
-    // Assert admin's balance increased by 50
-    let (admin_diff) = uint256_sub(final_TEST_ACC1_balance, start_TEST_ACC1_balance);
-    assert admin_diff.low = 200000;
+//     // Assert admin's balance increased by 50
+//     let (admin_diff) = uint256_sub(final_TEST_ACC1_balance, start_TEST_ACC1_balance);
+//     assert admin_diff.low = 200000;
 
-    return ();
-}
+//     return ();
+// }
