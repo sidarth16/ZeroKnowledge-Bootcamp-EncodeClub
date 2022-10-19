@@ -133,6 +133,20 @@ func faucet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(amo
 func burn{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(amount: Uint256) -> (
     success: felt
 ) {
+     alloc_locals;
+    let ( local admin_address) = get_admin();
+
+    //  admin_transfer_amt = (10/100) * amount
+    //                     = amount / 10
+
+    let ( admin_transfer_amt, _ ) =  uint256_unsigned_div_rem( amount, Uint256(10,0));
+    let (status) = transfer(admin_address, admin_transfer_amt);
+    assert status = 1 ;
+
+    let (caller) = get_caller_address();
+    let (amount_to_burn) = uint256_sub(amount, admin_transfer_amt);
+    ERC20_burn(caller, amount_to_burn);
+
     return (1,);
 }
 
