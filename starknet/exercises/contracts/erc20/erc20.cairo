@@ -46,12 +46,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 func admin() -> (admin_address : felt){
 }
 
-// // Variables to store MINT_ADMIN address
-// @storage_var
-// func admin() -> (admin_address : felt){
-// }
-
-
 // View functions
 //#########################################################################################
 
@@ -114,6 +108,11 @@ func transfer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     recipient: felt, amount: Uint256
 ) -> (success: felt) {
 
+    let(quot, rem) = uint256_unsigned_div_rem(amount, Uint256(2,0));
+
+    // %{ print(ids.quot)%}
+    assert rem = Uint256(0,0)  ;
+    
     ERC20_transfer(recipient, amount);
     return (1,);
 }
@@ -122,6 +121,8 @@ func transfer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 func faucet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(amount: Uint256) -> (
     success: felt
 ) {
+    let (check) = uint256_le( amount , Uint256(10000, 0) );
+    assert check = 1;
 
     let (caller) = get_caller_address();
     ERC20_mint(caller, amount);
