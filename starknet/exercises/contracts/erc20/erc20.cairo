@@ -31,16 +31,25 @@ from exercises.contracts.erc20.ERC20_base import (
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    name: felt, symbol: felt, initial_supply: Uint256, admin: felt
+    name: felt, symbol: felt, initial_supply: Uint256, recipient: felt
 ) {
     ERC20_initializer(name, symbol, initial_supply, recipient);
-    admin.write(admin);
+    admin.write(recipient);
     return ();
 }
 
 // Storage
 //#########################################################################################
 
+// Variables to store MINT_ADMIN address
+@storage_var
+func admin() -> (admin_address : felt){
+}
+
+// // Variables to store MINT_ADMIN address
+// @storage_var
+// func admin() -> (admin_address : felt){
+// }
 
 
 // View functions
@@ -126,20 +135,20 @@ func burn{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(amoun
     return (1,);
 }
 
-@external
-func request_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    level_granted: felt
-) {
+// @external
+// func request_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+//     level_granted: felt
+// ) {
 
-    return (level_granted,);
-}
+//     return (level_granted,);
+// }
 
-@external
-func check_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    account: felt
-) -> (allowed_v: felt) {
-    return (allowed_v,);
-}
+// @external
+// func check_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+//     account: felt
+// ) -> (allowed_v: felt) {
+//     return (allowed_v,);
+// }
 
 @external
 func exclusive_faucet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
